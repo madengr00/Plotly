@@ -21,15 +21,14 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db/bellybutton.sqlite"
 db = SQLAlchemy(app)
 
-# reflect an existing database into a new model
+# # reflect an existing database into a new model
 Base = automap_base()
-# reflect the tables
+# # reflect the tables
 Base.prepare(db.engine, reflect=True)
 
-# Save references to each table
+# # Save references to each table
 Samples_Metadata = Base.classes.sample_metadata
 Samples = Base.classes.samples
-
 
 @app.route("/")
 def index():
@@ -51,6 +50,7 @@ def names():
 
 @app.route("/metadata/<sample>")
 def sample_metadata(sample):
+    
     """Return the MetaData for a given sample."""
     sel = [
         Samples_Metadata.sample,
@@ -95,6 +95,9 @@ def samples(sample):
         "otu_labels": sample_data.otu_label.tolist(),
     }
     return jsonify(data)
+
+
+
 
 
 if __name__ == "__main__":
