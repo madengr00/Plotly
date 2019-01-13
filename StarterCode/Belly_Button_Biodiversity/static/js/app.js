@@ -66,12 +66,13 @@ function buildCharts(sample) {
         color: response.otu_ids
       }
     }];
-    var layout = {title: "Top 10 Samples", 
+    var layout = {
     sort: true,
     xaxis: {title: {text: 'OTU IDS'}},
+    yaxis: {title: {text: 'Sample Values'}},
     sort: true
     }
-    //Plot the chart to a dive tag with id "pie"
+    //Plot the chart to a dive tag with id "bubble"
     Plotly.newPlot("bubble",trace2,layout);
 
 
