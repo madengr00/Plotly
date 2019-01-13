@@ -1,5 +1,5 @@
 function buildMetadata(sample) {
-  /* data route */
+  /* data route */  //Note:  javascript did not recognize <sample> notation as a variable
   var url = "/metadata/" + sample;
   console.log(url);
   // Use `d3.json` to fetch the metadata for a sample
@@ -15,16 +15,10 @@ function buildMetadata(sample) {
     var bbtype = metadata.map(data => data.BBTYPE);
     var wfreq = metadata.map(data => data.WFREQ);
 
-    console.log(sample);
-    console.log(ethnicity);
-    console.log(gender);
-    console.log(age);
-    console.log(location);
-    console.log(bbtype);
-    console.log(wfreq);
+    // remove previous values from the #sample-metadata panel
+    d3.select("#sample-metadata").html("")
 
     // add values to the #sample-metadata panel
-    d3.select("#sample-metadata").html("")
     d3.select("#sample-metadata").append("li").text(`Sample: ${sample}`);
     d3.select("#sample-metadata").append("li").text(`Ethnicity: ${ethnicity}`);
     d3.select("#sample-metadata").append("li").text(`Gender: ${gender}`);
@@ -34,38 +28,56 @@ function buildMetadata(sample) {
     d3.select("#sample-metadata").append("li").text(`Wfreq: ${wfreq}`);
   });  
 }
-
-
-  // @TODO: Use `d3.json` to fetch the sample data for the plots
-
-    // @TODO: Build a Bubble Chart using the sample data
-
-    // @TODO: Build a Pie Chart
+  
     // HINT: You will need to use slice() to grab the top 10 sample_values,
     // otu_ids, and labels (10 each).
-// function buildCharts(sample) {
-//     /* data route */
-//   var url = "/samples/<sample>";
-//   // Use `d3.json` to fetch the data
-//   d3.json(url).then(function(response){
-//     // Create a Pie Chart 
-//     var data = [response];
-//     console.log(data);
-    
-//     // Slice the first 10 records
-//     var trace1 = {
-//       labels: data.map(data => data.otu_labels.slice(0,10);
-//       values: data.map(data => data.sample_values.slice(0,10);
-//       type: 'pie'
-//     }
-//     var data = [trace1]
-//     var layout = {
-//       title: "Top 10 Samples"
-//   };
 
-//   Plotly.newPlot("pie",left,layout);
-// });
-// }
+function buildCharts(sample) {
+  /* data route */
+  var url = `/samples/${sample}`;
+  // Use `d3.json` to fetch the data
+  d3.json(url).then(function(response){
+    console.log(response);
+    // Create a Pie Chart
+    console.log(response.sample_values);
+    console.log(response.otu_ids);
+    var trace1 = [{
+      values: response.sample_values.slice(0,10),
+      labels: response.otu_ids.slice(0,10),
+      type: "pie",
+      sort: true
+    }];
+    var layout = {
+      title: "Top 10 Samples",
+    }
+
+    console.log(trace1);
+    //Plot the chart to a dive tag with id "pie"
+    Plotly.newPlot("pie",trace1,layout);
+    
+    //Create a Bubble Chart
+    var trace2 = [{
+      y: response.sample_values,
+      x: response.otu_ids,
+      text: response.otu_labels,
+      mode: 'markers',
+      marker: {
+        size: response.sample_values,
+        color: response.otu_ids
+      }
+    }];
+    var layout = {title: "Top 10 Samples", 
+    sort: true,
+    xaxis: {title: {text: 'OTU IDS'}},
+    sort: true
+    }
+    //Plot the chart to a dive tag with id "pie"
+    Plotly.newPlot("bubble",trace2,layout);
+
+
+
+  });
+}
 
 function init() {
   // Grab a reference to the dropdown select element
@@ -82,7 +94,7 @@ function init() {
 
     // Use the first sample from the list to build the initial plots
     const firstSample = sampleNames[0];
-    //buildCharts(firstSample);
+    buildCharts(firstSample);
     buildMetadata(firstSample);
     console.log(firstSample);
   });
@@ -91,7 +103,7 @@ function init() {
 function optionChanged(newSample) {
   console.log(newSample);
   // Fetch new data each time a new sample is selected
-  //buildCharts(newSample);
+  buildCharts(newSample);
   buildMetadata(newSample);
 }
 
